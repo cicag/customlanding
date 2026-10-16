@@ -1,179 +1,244 @@
 <?php
-$data = json_decode(file_get_contents(__DIR__ . '/src/data/data.json'), true);
+$raw = @file_get_contents(__DIR__ . '/src/data.json');
+$data = ($raw !== false) ? json_decode($raw, true) : null;
+if (!is_array($data)) { $data = array(); }
+
+$e = function ($value, $default = '') {
+    return htmlspecialchars((string)($value ?? $default), ENT_QUOTES, 'UTF-8');
+};
+
+$company    = isset($data['Company'])   && is_array($data['Company'])   ? $data['Company']   : array();
+$nav        = isset($data['Nav'])       && is_array($data['Nav'])       ? $data['Nav']       : array();
+$features   = isset($data['Features'])  && is_array($data['Features'])  ? $data['Features']  : array();
+$offerings  = isset($data['Offerings']) && is_array($data['Offerings']) ? $data['Offerings'] : array();
+$services   = isset($offerings['services']) && is_array($offerings['services']) ? $offerings['services'] : array();
+$legal      = isset($data['Legalitas']) && is_array($data['Legalitas']) ? $data['Legalitas'] : array();
+$legalItems = isset($legal['items']) && is_array($legal['items']) ? $legal['items'] : array();
+$contact    = isset($data['Contact'])   && is_array($data['Contact'])   ? $data['Contact']   : array();
+$footer     = isset($data['Footer'])    && is_array($data['Footer'])    ? $data['Footer']    : array();
+
+$wa = preg_replace('/[^0-9]/', '', (string)($contact['whatsapp'] ?? ''));
+if ($wa === '') {
+    $wa = preg_replace('/[^0-9]/', '', (string)($contact['phone'] ?? ''));
+}
+$contactHref = ($wa !== '')
+    ? 'https://wa.me/' . $wa
+    : 'mailto:' . (string)($contact['email'] ?? '');
+
+$mapEmbed = trim((string)($contact['map_embed'] ?? ''));
+
+$footerText = str_replace('{year}', date('Y'), (string)($footer['text'] ?? ''));
+$brandName  = (string)($company['name'] ?? 'Landing Page');
+$headerName = trim((string)($company['header_name'] ?? '')) !== '' ? (string)$company['header_name'] : $brandName;
+$heroName   = trim((string)($company['hero_name'] ?? '')) !== '' ? (string)$company['hero_name'] : $brandName;
+$logo       = (string)($company['logo'] ?? '');
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="shortcut icon" href="public/img/favicon.ico" type="image/x-icon" />
-  <link rel="apple-touch-icon" href="public/img/apple-touch-icon.png" />
-  <link rel="apple-touch-icon" sizes="72x72" href="public/img/apple-touch-icon-72x72.png" />
-  <link rel="apple-touch-icon" sizes="114x114" href="public/img/apple-touch-icon-114x114.png" />
-  <link rel="stylesheet" type="text/css" href="public/css/bootstrap.css" />
-  <link rel="stylesheet" type="text/css" href="public/fonts/font-awesome/css/font-awesome.css" />
+  <meta name="theme-color" content="#111827" />
+  <link rel="icon" type="image/png" href="imgs/pavicon.png" />
   <link rel="stylesheet" type="text/css" href="public/css/style.css" />
-  <link rel="stylesheet" type="text/css" href="public/css/nivo-lightbox/nivo-lightbox.css" />
-  <link rel="stylesheet" type="text/css" href="public/css/nivo-lightbox/default.css" />
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900" rel="stylesheet" />
-  <title>A Landing Page Template</title>
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <style>
-    #particles-js { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; }
-    .intro .overlay { position: relative; z-index: 1; }
-  </style>
+  <link rel="stylesheet" type="text/css" href="public/fonts/font-awesome/css/font-awesome.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <title><?= $e($brandName) ?></title>
+  <meta name="description" content="<?= $e($company['description'] ?? '') ?>" />
+  <meta name="author" content="<?= $e($brandName) ?>" />
 </head>
-<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
-  <nav id="menu" class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-          <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand page-scroll" href="#page-top">My Landing Page</a>
-      </div>
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="#features" class="page-scroll">Features</a></li>
-          <li><a href="#about" class="page-scroll">About</a></li>
-          <li><a href="#services" class="page-scroll">Services</a></li>
-          <li><a href="#portfolio" class="page-scroll">Gallery</a></li>
-          <li><a href="#testimonials" class="page-scroll">Testimonials</a></li>
+<body>
+  <a class="skip-link" href="#main">Lewati ke konten utama</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#top">
+        <?php if ($logo !== ''): ?>
+          <img class="brand__img" src="<?= $e($logo) ?>" alt="<?= $e($headerName) ?>" />
+        <?php else: ?>
+          <span class="brand__mark" aria-hidden="true"><i class="<?= $e($company['logo_icon'] ?? 'fa fa-leaf') ?>"></i></span>
+        <?php endif; ?>
+        <span class="brand__name"><?= $e($headerName) ?></span>
+      </a>
+
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Buka menu navigasi">
+        <i class="fa fa-bars" aria-hidden="true"></i>
+      </button>
+
+      <nav id="primary-nav" class="primary-nav" aria-label="Navigasi utama">
+        <ul class="nav-list">
+          <li><a href="#layanan"><?= $e($nav['services'] ?? 'Layanan') ?></a></li>
+          <li><a href="#legalitas"><?= $e($nav['legal'] ?? 'Legalitas') ?></a></li>
+          <li><a href="#kontak" class="btn-flat btn-flat--primary btn-flat--sm"><?= $e($nav['contact'] ?? 'Kontak Kami') ?></a></li>
         </ul>
-      </div>
-    </div>
-  </nav>
-  <header id="header">
-    <div class="intro">
-      <div id="particles-js"></div>
-      <div class="overlay">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-8 col-md-offset-2 intro-text">
-              <h1><?= htmlspecialchars($data['Header']['title'] ?? 'Loading') ?><span></span></h1>
-              <p><?= htmlspecialchars($data['Header']['paragraph'] ?? 'Loading') ?></p>
-              <a href="#features" class="btn btn-custom btn-lg page-scroll">Learn More</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      </nav>
     </div>
   </header>
-  <div id="features" class="text-center">
-    <div class="container">
-      <div class="col-md-10 col-md-offset-1 section-title"><h2>Features</h2></div>
-      <div class="row">
-        <?php if (!empty($data['Features'])): foreach ($data['Features'] as $f): ?>
-          <div class="col-xs-6 col-md-3">
-            <i class="fa <?= htmlspecialchars($f['icon']) ?>"></i>
-            <h3><?= htmlspecialchars($f['title']) ?></h3>
-            <p><?= htmlspecialchars($f['text']) ?></p>
+
+  <main id="main">
+    <section id="top" class="hero">
+      <div class="container">
+        <div class="hero__inner">
+          <div class="hero__content">
+            <span class="eyebrow"><?= $e($company['tagline'] ?? '') ?></span>
+            <h1 class="hero__title"><?= $e($heroName) ?></h1>
+            <p class="hero__motto"><?= $e($company['motto'] ?? '') ?></p>
+            <p class="hero__desc"><?= $e($company['description'] ?? '') ?></p>
+            <a href="#layanan" class="btn-flat btn-flat--inverse btn-flat--lg"><?= $e($nav['hero_button'] ?? 'Lihat Layanan Kami') ?></a>
           </div>
-        <?php endforeach; endif; ?>
-      </div>
-    </div>
-  </div>
-  <div id="about">
-    <div class="container">
-      <div class="row">
-        <div class="col-xs-12 col-md-6"><img src="public/img/about.jpg" class="img-responsive" alt="" /></div>
-        <div class="col-xs-12 col-md-6">
-          <div class="about-text">
-            <h2>About Us</h2>
-            <p><?= htmlspecialchars($data['About']['paragraph'] ?? '') ?></p>
-            <h3>Why Choose Us?</h3>
-            <div class="list-style">
-              <div class="col-lg-6 col-sm-6 col-xs-12">
-                <ul><?php if (!empty($data['About']['Why'])): foreach ($data['About']['Why'] as $d): ?><li><?= htmlspecialchars($d) ?></li><?php endforeach; endif; ?></ul>
-              </div>
-              <div class="col-lg-6 col-sm-6 col-xs-12">
-                <ul><?php if (!empty($data['About']['Why2'])): foreach ($data['About']['Why2'] as $d): ?><li><?= htmlspecialchars($d) ?></li><?php endforeach; endif; ?></ul>
-              </div>
-            </div>
+          <?php $heroLogo = (string)($company['hero_logo'] ?? ''); ?>
+          <div class="hero__logo<?= $heroLogo === '' ? ' hero__logo--empty' : '' ?>">
+            <?php if ($heroLogo !== ''): ?>
+              <img src="<?= $e($heroLogo) ?>" alt="Logo <?= $e($heroName) ?>" />
+            <?php else: ?>
+              <i class="<?= $e($company['logo_icon'] ?? 'fa fa-leaf') ?>" aria-hidden="true"></i>
+            <?php endif; ?>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <div id="services" class="text-center">
-    <div class="container">
-      <div class="section-title"><h2>Our Services</h2><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit duis sed dapibus leonec.</p></div>
-      <div class="row">
-        <?php if (!empty($data['Services'])): foreach ($data['Services'] as $s): ?>
-          <div class="col-md-4">
-            <i class="fa <?= htmlspecialchars($s['icon']) ?>"></i>
-            <div class="service-desc"><h3><?= htmlspecialchars($s['name']) ?></h3><p><?= htmlspecialchars($s['text']) ?></p></div>
-          </div>
-        <?php endforeach; endif; ?>
+    </section>
+
+    <section id="keunggulan" class="section section--muted">
+      <div class="container">
+        <ul class="features__grid">
+          <?php foreach ($features as $f): ?>
+            <li class="feature">
+              <span class="feature__icon"><i class="<?= $e($f['icon'] ?? '') ?>" aria-hidden="true"></i></span>
+              <h3><?= $e($f['title'] ?? '') ?></h3>
+              <p><?= $e($f['text'] ?? '') ?></p>
+            </li>
+          <?php endforeach; ?>
+        </ul>
       </div>
-    </div>
-  </div>
-  <div id="portfolio" class="text-center">
-    <div class="container">
-      <div class="section-title"><h2>Gallery</h2><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit duis sed dapibus leonec.</p></div>
-      <div class="row">
-        <div class="portfolio-items">
-          <?php $gallery = [
-            ['thumb' => 'public/img/portfolio/01-small.jpg', 'title' => 'Lorem Ipsum1'],
-            ['thumb' => 'public/img/portfolio/02-small.jpg', 'title' => 'Lorem Ipsum2'],
-            ['thumb' => 'public/img/portfolio/03-small.jpg', 'title' => 'Lorem Ipsum3'],
-            ['thumb' => 'public/img/portfolio/04-small.jpg', 'title' => 'Lorem Ipsum4'],
-            ['thumb' => 'public/img/portfolio/05-small.jpg', 'title' => 'Lorem Ipsum5'],
-            ['thumb' => 'public/img/portfolio/06-small.jpg', 'title' => 'Lorem Ipsum6'],
-            ['thumb' => 'public/img/portfolio/07-small.jpg', 'title' => 'Lorem Ipsum7'],
-            ['thumb' => 'public/img/portfolio/08-small.jpg', 'title' => 'Lorem Ipsum8'],
-            ['thumb' => 'public/img/portfolio/09-small.jpg', 'title' => 'Lorem Ipsum9'],
-          ]; foreach ($gallery as $g): ?>
-            <div class="col-sm-6 col-md-4 col-lg-4">
-              <div class="portfolio-item">
-                <div class="hover-bg">
-                  <a href="<?= str_replace('-small', '-large', $g['thumb']) ?>" title="<?= htmlspecialchars($g['title']) ?>" data-lightbox-gallery="gallery1">
-                    <div class="hover-text"><h4><?= htmlspecialchars($g['title']) ?></h4></div>
-                    <img src="<?= $g['thumb'] ?>" class="img-responsive" alt="Project Title" />
-                  </a>
-                </div>
+    </section>
+
+    <section id="layanan" class="section">
+      <div class="container">
+        <div class="section__head section__head--center">
+          <h2><?= $e($offerings['title'] ?? 'Apa yang Kami Tawarkan') ?></h2>
+          <p><?= $e($offerings['description'] ?? '') ?></p>
+          <?php if (trim((string)($offerings['sub_description'] ?? '')) !== ''): ?>
+            <p class="section__sub"><?= $e($offerings['sub_description']) ?></p>
+          <?php endif; ?>
+        </div>
+        <div class="offerings__list">
+          <?php foreach ($services as $s): ?>
+            <?php $points = isset($s['details']) && is_array($s['details']) ? $s['details'] : array(); ?>
+            <details class="service" open>
+              <summary class="service__summary">
+                <span class="service__head">
+                  <span class="service__name"><?= $e($s['name'] ?? '') ?></span>
+                </span>
+                <i class="fa fa-chevron-down service__caret" aria-hidden="true"></i>
+              </summary>
+              <div class="service__body">
+                <?php if (!empty($points)): ?>
+                  <ul class="service__points">
+                    <?php foreach ($points as $d): ?>
+                      <?php $img = trim((string)($d['image'] ?? '')); ?>
+                      <li class="service__point">
+                        <?php if ($img !== ''): ?>
+                          <img class="service__point-img" src="<?= $e($img) ?>" alt="<?= $e($d['highlight'] ?? $s['name'] ?? '') ?>" loading="lazy">
+                        <?php endif; ?>
+                        <div class="service__point-body">
+                          <?php if (trim((string)($d['highlight'] ?? '')) !== ''): ?>
+                            <span class="service__point-highlight"><?= $e($d['highlight']) ?></span>
+                          <?php endif; ?>
+                          <?php if (trim((string)($d['description'] ?? '')) !== ''): ?>
+                            <p class="service__point-desc"><?= $e($d['description']) ?></p>
+                          <?php endif; ?>
+                        </div>
+                      </li>
+                    <?php endforeach; ?>
+                  </ul>
+                <?php endif; ?>
               </div>
-            </div>
+            </details>
           <?php endforeach; ?>
         </div>
       </div>
-    </div>
-  </div>
-  <div id="testimonials">
-    <div class="container">
-      <div class="section-title text-center"><h2>What our clients say</h2></div>
-      <div class="row">
-        <?php if (!empty($data['Testimonials'])): foreach ($data['Testimonials'] as $t): 
-          $img = $t['img'];
-          if (strpos($img, 'img/testimonials/') === 0) {
-            $img = 'public/' . $img;
-          } elseif (strpos($img, 'public/') !== 0 && strpos($img, 'http') !== 0) {
-            $img = 'public/' . ltrim($img, '/');
-          }
-        ?>
-          <div class="col-md-4">
-            <div class="testimonial">
-              <div class="testimonial-image"><img src="<?= htmlspecialchars($img) ?>" alt="" /></div>
-              <div class="testimonial-content">
-                <p>"<?= htmlspecialchars($t['text']) ?>"</p>
-                <div class="testimonial-meta"> - <?= htmlspecialchars($t['name']) ?></div>
-              </div>
+    </section>
+
+    <section id="legalitas" class="section section--muted">
+      <div class="container">
+        <div class="section__head section__head--center">
+          <h2><?= $e($legal['title'] ?? 'Legalitas') ?></h2>
+          <p><?= $e($legal['description'] ?? '') ?></p>
+        </div>
+        <dl class="legal__grid">
+          <?php foreach ($legalItems as $item): ?>
+            <div class="legal__item">
+              <dt class="legal__label">
+                <span class="legal__icon" aria-hidden="true"><i class="<?= $e($item['icon'] ?? 'fa fa-file-text-o') ?>"></i></span>
+                <span><?= $e($item['label'] ?? '') ?></span>
+              </dt>
+              <dd class="legal__value"><?= $e($item['value'] ?? '') ?></dd>
+            </div>
+          <?php endforeach; ?>
+        </dl>
+      </div>
+    </section>
+
+    <section id="kontak" class="section contact">
+      <div class="container">
+        <div class="section__head section__head--center">
+          <h2><?= $e($contact['title'] ?? 'Kontak Kami') ?></h2>
+          <p><?= $e($contact['description'] ?? '') ?></p>
+        </div>
+        <div class="contact__layout">
+          <div class="contact__details">
+            <ul class="contact__list">
+              <li class="contact__item">
+                <i class="fa fa-envelope contact__icon" aria-hidden="true"></i>
+                <span class="contact__meta">
+                  <span class="contact__label"><?= $e($contact['email_label'] ?? 'Email') ?></span>
+                  <a class="contact__value" href="mailto:<?= $e($contact['email'] ?? '') ?>"><?= $e($contact['email'] ?? '') ?></a>
+                </span>
+              </li>
+              <li class="contact__item">
+                <i class="fa fa-phone contact__icon" aria-hidden="true"></i>
+                <span class="contact__meta">
+                  <span class="contact__label"><?= $e($contact['phone_label'] ?? 'Telepon / WhatsApp') ?></span>
+                  <a class="contact__value" href="<?= $wa !== '' ? 'https://wa.me/' . $e($wa) : 'tel:' . $e($contact['phone'] ?? '') ?>"><?= $e($contact['phone'] ?? '') ?></a>
+                </span>
+              </li>
+              <li class="contact__item">
+                <i class="fa fa-map-marker contact__icon" aria-hidden="true"></i>
+                <span class="contact__meta">
+                  <span class="contact__label"><?= $e($contact['location_label'] ?? 'Lokasi') ?></span>
+                  <span class="contact__value"><?= $e($contact['location'] ?? '') ?></span>
+                </span>
+              </li>
+            </ul>
+            <a class="btn-flat btn-flat--inverse btn-flat--lg" href="<?= $e($contactHref) ?>"><?= $e($contact['button'] ?? 'Kirim Pesan') ?></a>
+          </div>
+          <div class="contact__map">
+            <div class="contact__map-frame">
+              <?php if ($mapEmbed !== ''): ?>
+                <iframe
+                  src="<?= $e($mapEmbed) ?>"
+                  title="Peta lokasi <?= $e($brandName) ?>"
+                  loading="lazy"
+                  allowfullscreen
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <?php else: ?>
+                <p class="contact__map-empty">Peta lokasi belum tersedia.</p>
+              <?php endif; ?>
             </div>
           </div>
-        <?php endforeach; endif; ?>
+        </div>
       </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p><?= $e($footerText) ?></p>
     </div>
-  </div>
-  <div id="footer">
-    <div class="container text-center"><p>&copy; <?= date('Y') ?> My Landing Page. Design by <a href="http://www.templatewire.com" rel="nofollow">TemplateWire</a></p></div>
-  </div>
-  <script type="text/javascript" src="public/js/jquery.1.11.1.js"></script>
-  <script type="text/javascript" src="public/js/bootstrap.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-  <script type="text/javascript" src="public/js/nivo-lightbox.js"></script>
-  <script type="text/javascript" src="public/js/main.js"></script>
+  </footer>
+
+  <script src="public/js/main.js"></script>
 </body>
 </html>

@@ -1,104 +1,73 @@
-(function($) {
+(function () {
   "use strict";
 
-  // Smooth scroll
-  $('a[href*="#"]').on('click', function(event) {
-    if (location.pathname.replace(/^\//, '') === this.pathname.replace(/^\//, '') && location.hostname === this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        event.preventDefault();
-        $('html, body').animate({
-          scrollTop: target.offset().top - 50
-        }, 1000);
+  /* ---- Mobile navigation ---- */
+  var toggle = document.querySelector(".nav-toggle");
+  var nav = document.getElementById("primary-nav");
+
+  function setMenu(open) {
+    if (!toggle || !nav) { return; }
+    nav.classList.toggle("is-open", open);
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.setAttribute("aria-label", open ? "Tutup menu navigasi" : "Buka menu navigasi");
+  }
+
+  if (toggle && nav) {
+    toggle.addEventListener("click", function () {
+      setMenu(!nav.classList.contains("is-open"));
+    });
+
+    nav.addEventListener("click", function (event) {
+      if (event.target.closest("a")) {
+        setMenu(false);
       }
-    }
-  });
+    });
 
-  // Navbar active state
-  $('body').scrollspy({
-    target: '.navbar-fixed-top',
-    offset: 80
-  });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && nav.classList.contains("is-open")) {
+        setMenu(false);
+        toggle.focus();
+      }
+    });
 
-  // Hide navbar on scroll
-  $(window).on('scroll', function() {
-    if ($('.navbar').offset().top > 50) {
-      $('.navbar-fixed-top').addClass('top-nav-collapse');
-    } else {
-      $('.navbar-fixed-top').removeClass('top-nav-collapse');
-    }
-  });
-
-  // Nivo Lightbox
-  if ($('.portfolio-item a').length) {
-    $('.portfolio-item a').nivoLightbox({
-      effect: 'slideDown',
-      keyboardNav: true,
+    window.addEventListener("resize", function () {
+      if (window.innerWidth > 860) {
+        setMenu(false);
+      }
     });
   }
 
-  // ParticlesJS
-  if (typeof particlesJS !== 'undefined' && document.getElementById('particles-js')) {
-    particlesJS('particles-js', {
-      "particles": {
-        "number": {
-          "value": 80,
-          "density": {
-            "enable": true,
-            "value_area": 800
-          }
-        },
-        "color": {
-          "value": "#ffffff"
-        },
-        "shape": {
-          "type": "circle",
-          "stroke": {
-            "width": 0,
-            "color": "#000000"
-          }
-        },
-        "opacity": {
-          "value": 0.5,
-          "random": false
-        },
-        "size": {
-          "value": 3,
-          "random": true
-        },
-        "line_linked": {
-          "enable": true,
-          "distance": 150,
-          "color": "#ffffff",
-          "opacity": 0.4,
-          "width": 1
-        },
-        "move": {
-          "enable": true,
-          "speed": 6,
-          "direction": "none",
-          "random": false,
-          "straight": false,
-          "out_mode": "out",
-          "bounce": false
-        }
+  /* ---- Active section highlight (keyboard/AT friendly) ---- */
+  var navLinks = Array.prototype.slice.call(
+    document.querySelectorAll(".nav-list a:not(.btn-flat)[href^='#']")
+  );
+
+  var sections = navLinks
+    .map(function (link) {
+      return document.querySelector(link.getAttribute("href"));
+    })
+    .filter(Boolean);
+
+  if ("IntersectionObserver" in window && sections.length) {
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) { return; }
+          navLinks.forEach(function (link) {
+            var current = link.getAttribute("href") === "#" + entry.target.id;
+            if (current) {
+              link.setAttribute("aria-current", "true");
+            } else {
+              link.removeAttribute("aria-current");
+            }
+          });
+        });
       },
-      "interactivity": {
-        "detect_on": "canvas",
-        "events": {
-          "onhover": {
-            "enable": true,
-            "mode": "grab"
-          },
-          "onclick": {
-            "enable": true,
-            "mode": "push"
-          },
-          "resize": true
-        }
-      },
-      "retina_detect": true
+      { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
+    );
+
+    sections.forEach(function (section) {
+      observer.observe(section);
     });
   }
-})(jQuery);
+})();

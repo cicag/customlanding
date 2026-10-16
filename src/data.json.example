@@ -1,0 +1,145 @@
+{
+    "Company": {
+        "name": "PT Contoh Sejahtera",
+        "header_name": "Contoh Sejahtera",
+        "hero_name": "PT Contoh Sejahtera",
+        "logo": "public/img/logo.png",
+        "logo_icon": "fa fa-building",
+        "hero_logo": "public/img/logo.png",
+        "tagline": "Contoh • Tagline • Perusahaan",
+        "motto": "Motto Contoh Anda",
+        "description": "Deskripsi singkat perusahaan contoh. Ganti dengan penjelasan bidang usaha, lokasi, dan keunggulan perusahaan Anda."
+    },
+    "Nav": {
+        "services": "Layanan",
+        "legal": "Legalitas",
+        "contact": "Kontak Kami",
+        "hero_button": "Lihat Layanan Kami"
+    },
+    "Features": [
+        {
+            "icon": "fa fa-briefcase",
+            "title": "0",
+            "text": "Contoh Statistik Pertama"
+        },
+        {
+            "icon": "fa fa-calendar",
+            "title": "0000",
+            "text": "Contoh Tahun Berdiri"
+        },
+        {
+            "icon": "fa fa-certificate",
+            "title": "NIB",
+            "text": "Contoh Status Legalitas"
+        },
+        {
+            "icon": "fa fa-map-marker",
+            "title": "Kota",
+            "text": "Contoh Lokasi Perusahaan"
+        }
+    ],
+    "Offerings": {
+        "title": "Apa Yang Kami Tawarkan?",
+        "description": "Layanan Unggulan Kami",
+        "sub_description": "Deskripsi tambahan singkat mengenai layanan perusahaan Anda.",
+        "services": [
+            {
+                "name": "A. Layanan Contoh Pertama",
+                "details": [
+                    {
+                        "highlight": "Poin Contoh 1",
+                        "description": "Deskripsi singkat untuk poin pertama layanan contoh.",
+                        "image": ""
+                    },
+                    {
+                        "highlight": "Poin Contoh 2",
+                        "description": "Deskripsi singkat untuk poin kedua layanan contoh.",
+                        "image": ""
+                    },
+                    {
+                        "highlight": "Poin Contoh 3",
+                        "description": "Deskripsi singkat untuk poin ketiga layanan contoh.",
+                        "image": ""
+                    }
+                ]
+            },
+            {
+                "name": "B. Layanan Contoh Kedua",
+                "details": [
+                    {
+                        "highlight": "Poin Contoh 1",
+                        "description": "Deskripsi singkat untuk poin pertama layanan contoh.",
+                        "image": ""
+                    },
+                    {
+                        "highlight": "Poin Contoh 2",
+                        "description": "Deskripsi singkat untuk poin kedua layanan contoh.",
+                        "image": ""
+                    }
+                ]
+            },
+            {
+                "name": "C. Layanan Contoh Ketiga",
+                "details": [
+                    {
+                        "highlight": "Poin Contoh 1",
+                        "description": "Deskripsi singkat untuk poin pertama layanan contoh.",
+                        "image": ""
+                    },
+                    {
+                        "highlight": "Poin Contoh 2",
+                        "description": "Deskripsi singkat untuk poin kedua layanan contoh.",
+                        "image": ""
+                    }
+                ]
+            },
+            {
+                "name": "D. Layanan Contoh Keempat",
+                "details": [
+                    {
+                        "highlight": "Poin Contoh 1",
+                        "description": "Deskripsi singkat untuk poin pertama layanan contoh.",
+                        "image": ""
+                    },
+                    {
+                        "highlight": "Poin Contoh 2",
+                        "description": "Deskripsi singkat untuk poin kedua layanan contoh.",
+                        "image": ""
+                    }
+                ]
+            }
+        ]
+    },
+    "Legalitas": {
+        "title": "Legalitas",
+        "description": "Dokumen resmi dan perizinan yang dimiliki perusahaan.",
+        "items": [
+            { "icon": "fa fa-building-o", "label": "Nama Perusahaan", "value": "PT Contoh Sejahtera" },
+            { "icon": "fa fa-briefcase", "label": "Bentuk Badan Usaha", "value": "Perseroan Terbatas (PT)" },
+            { "icon": "fa fa-map-marker", "label": "Kedudukan", "value": "Kota Contoh, Provinsi Contoh" },
+            { "icon": "fa fa-file-text-o", "label": "Akta Pendirian", "value": "Akta No. 00000000 tanggal 1 Januari 2000" },
+            { "icon": "fa fa-bookmark", "label": "SK Terdaftar", "value": "SK Kemenkumham No. AHU-00000000.AH.01.01 Tahun 2000" },
+            { "icon": "fa fa-refresh", "label": "Akta Perubahan", "value": "Akta No. 00000000 tanggal 1 Januari 2000" },
+            { "icon": "fa fa-credit-card", "label": "NIB", "value": "0000000000000" },
+            { "icon": "fa fa-calculator", "label": "NPWP", "value": "00.000.000.0-000.000" },
+            { "icon": "fa fa-home", "label": "Alamat Kantor", "value": "Jl. Contoh No. 123, Kota Contoh, Provinsi Contoh 00000" },
+            { "icon": "fa fa-certificate", "label": "Izin Sektor Usaha", "value": "Nomor izin contoh dari instansi terkait" }
+        ]
+    },
+    "Contact": {
+        "title": "Kontak Kami",
+        "description": "Hubungi kami untuk informasi produk, kerja sama, dan pemesanan.",
+        "email_label": "Email",
+        "phone_label": "Telepon / WhatsApp",
+        "location_label": "Lokasi",
+        "email": "info@contoh.com",
+        "phone": "+62 812-0000-0000",
+        "whatsapp": "6281200000000",
+        "location": "Jl. Contoh No. 123, Kota Contoh, Provinsi Contoh 00000",
+        "map_embed": "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15865.0!2d106.8106!3d-6.2615!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid",
+        "button": "Kirim Pesan"
+    },
+    "Footer": {
+        "text": "\u00a9 {year} PT Contoh Sejahtera. Seluruh hak cipta dilindungi."
+    }
+}
