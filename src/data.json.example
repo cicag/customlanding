@@ -3,9 +3,9 @@
         "name": "PT Contoh Sejahtera",
         "header_name": "Contoh Sejahtera",
         "hero_name": "PT Contoh Sejahtera",
-        "logo": "public/img/logo.png",
+        "logo": "imgs/LOGO.webp",
         "logo_icon": "fa fa-building",
-        "hero_logo": "public/img/logo.png",
+        "hero_logo": "imgs/LOGO.webp",
         "tagline": "Contoh • Tagline • Perusahaan",
         "motto": "Motto Contoh Anda",
         "description": "Deskripsi singkat perusahaan contoh. Ganti dengan penjelasan bidang usaha, lokasi, dan keunggulan perusahaan Anda."
@@ -49,7 +49,9 @@
                     {
                         "highlight": "Poin Contoh 1",
                         "description": "Deskripsi singkat untuk poin pertama layanan contoh.",
-                        "image": ""
+                        "image": "",
+                        "link": "https://contoh.com/halaman",
+                        "link_label": "Selengkapnya"
                     },
                     {
                         "highlight": "Poin Contoh 2",
@@ -69,7 +71,9 @@
                     {
                         "highlight": "Poin Contoh 1",
                         "description": "Deskripsi singkat untuk poin pertama layanan contoh.",
-                        "image": ""
+                        "image": "",
+                        "link": "https://contoh.com/halaman",
+                        "link_label": "Selengkapnya"
                     },
                     {
                         "highlight": "Poin Contoh 2",
@@ -84,7 +88,9 @@
                     {
                         "highlight": "Poin Contoh 1",
                         "description": "Deskripsi singkat untuk poin pertama layanan contoh.",
-                        "image": ""
+                        "image": "",
+                        "link": "https://contoh.com/halaman",
+                        "link_label": "Selengkapnya"
                     },
                     {
                         "highlight": "Poin Contoh 2",
@@ -99,7 +105,9 @@
                     {
                         "highlight": "Poin Contoh 1",
                         "description": "Deskripsi singkat untuk poin pertama layanan contoh.",
-                        "image": ""
+                        "image": "",
+                        "link": "https://contoh.com/halaman",
+                        "link_label": "Selengkapnya"
                     },
                     {
                         "highlight": "Poin Contoh 2",

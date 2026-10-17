@@ -1,10 +1,25 @@
 <?php
-$raw = @file_get_contents(__DIR__ . '/src/data.json');
+$raw = @file_get_contents(__DIR__ . '/../src/data.json');
 $data = ($raw !== false) ? json_decode($raw, true) : null;
 if (!is_array($data)) { $data = array(); }
 
 $e = function ($value, $default = '') {
     return htmlspecialchars((string)($value ?? $default), ENT_QUOTES, 'UTF-8');
+};
+
+$safeHref = function ($url) {
+    $url = trim((string)$url);
+    if ($url === '') {
+        return '';
+    }
+    $lower = strtolower($url);
+    if (preg_match('#^(https?:|mailto:|tel:)#', $lower)) {
+        return $url;
+    }
+    if (preg_match('#^[a-z][a-z0-9+.\-]*:#', $lower)) {
+        return '';
+    }
+    return 'https://' . $url;
 };
 
 $company    = isset($data['Company'])   && is_array($data['Company'])   ? $data['Company']   : array();
@@ -40,8 +55,8 @@ $logo       = (string)($company['logo'] ?? '');
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#111827" />
   <link rel="icon" type="image/png" href="imgs/pavicon.png" />
-  <link rel="stylesheet" type="text/css" href="public/css/style.css" />
-  <link rel="stylesheet" type="text/css" href="public/fonts/font-awesome/css/font-awesome.css" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="fonts/font-awesome.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -100,17 +115,19 @@ $logo       = (string)($company['logo'] ?? '');
       </div>
     </section>
 
-    <section id="keunggulan" class="section section--muted">
+    <section id="keunggulan" class="section">
       <div class="container">
-        <ul class="features__grid">
-          <?php foreach ($features as $f): ?>
-            <li class="feature">
-              <span class="feature__icon"><i class="<?= $e($f['icon'] ?? '') ?>" aria-hidden="true"></i></span>
-              <h3><?= $e($f['title'] ?? '') ?></h3>
-              <p><?= $e($f['text'] ?? '') ?></p>
-            </li>
-          <?php endforeach; ?>
-        </ul>
+        <div class="features__box">
+          <ul class="features__grid">
+            <?php foreach ($features as $f): ?>
+              <li class="feature">
+                <span class="feature__icon"><i class="<?= $e($f['icon'] ?? '') ?>" aria-hidden="true"></i></span>
+                <h3><?= $e($f['title'] ?? '') ?></h3>
+                <p><?= $e($f['text'] ?? '') ?></p>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
       </div>
     </section>
 
@@ -118,7 +135,9 @@ $logo       = (string)($company['logo'] ?? '');
       <div class="container">
         <div class="section__head section__head--center">
           <h2><?= $e($offerings['title'] ?? 'Apa yang Kami Tawarkan') ?></h2>
-          <p><?= $e($offerings['description'] ?? '') ?></p>
+          <?php if (trim((string)($offerings['description'] ?? '')) !== ''): ?>
+            <span class="section__pill"><?= $e($offerings['description']) ?></span>
+          <?php endif; ?>
           <?php if (trim((string)($offerings['sub_description'] ?? '')) !== ''): ?>
             <p class="section__sub"><?= $e($offerings['sub_description']) ?></p>
           <?php endif; ?>
@@ -137,10 +156,20 @@ $logo       = (string)($company['logo'] ?? '');
                 <?php if (!empty($points)): ?>
                   <ul class="service__points">
                     <?php foreach ($points as $d): ?>
-                      <?php $img = trim((string)($d['image'] ?? '')); ?>
-                      <li class="service__point">
+                      <?php
+                        $img  = trim((string)($d['image'] ?? ''));
+                        $link = trim((string)($d['link'] ?? ''));
+                        $href = $link !== '' ? $safeHref($link) : '';
+                        $linkLabel = trim((string)($d['link_label'] ?? ''));
+                        if ($linkLabel === '') {
+                            $linkLabel = $link !== '' ? $link : 'Selengkapnya';
+                        }
+                      ?>
+                      <li class="service__point<?= $img !== '' ? ' service__point--media' : '' ?>">
                         <?php if ($img !== ''): ?>
-                          <img class="service__point-img" src="<?= $e($img) ?>" alt="<?= $e($d['highlight'] ?? $s['name'] ?? '') ?>" loading="lazy">
+                          <button type="button" class="service__point-media" aria-label="Perbesar gambar: <?= $e($d['highlight'] ?? $s['name'] ?? '') ?>">
+                            <img class="service__point-img" src="<?= $e($img) ?>" alt="<?= $e($d['highlight'] ?? $s['name'] ?? '') ?>" loading="lazy">
+                          </button>
                         <?php endif; ?>
                         <div class="service__point-body">
                           <?php if (trim((string)($d['highlight'] ?? '')) !== ''): ?>
@@ -148,6 +177,12 @@ $logo       = (string)($company['logo'] ?? '');
                           <?php endif; ?>
                           <?php if (trim((string)($d['description'] ?? '')) !== ''): ?>
                             <p class="service__point-desc"><?= $e($d['description']) ?></p>
+                          <?php endif; ?>
+                          <?php if ($href !== ''): ?>
+                            <a class="service__point-link" href="<?= $e($href) ?>"<?= preg_match('#^https?:#i', $href) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>>
+                              <i class="fa fa-external-link" aria-hidden="true"></i>
+                              <span><?= $e($linkLabel) ?></span>
+                            </a>
                           <?php endif; ?>
                         </div>
                       </li>
@@ -239,6 +274,11 @@ $logo       = (string)($company['logo'] ?? '');
     </div>
   </footer>
 
-  <script src="public/js/main.js"></script>
+  <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Pratinjau gambar">
+    <button type="button" class="lightbox__close" aria-label="Tutup pratinjau">&times;</button>
+    <img class="lightbox__img" alt="">
+  </div>
+
+  <script src="js/main.js"></script>
 </body>
 </html>

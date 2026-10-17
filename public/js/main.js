@@ -70,4 +70,73 @@
       observer.observe(section);
     });
   }
+
+  /* ---- Offering image lightbox ---- */
+  var lightbox = document.getElementById("lightbox");
+  var lightboxImg = lightbox ? lightbox.querySelector(".lightbox__img") : null;
+  var lightboxClose = lightbox ? lightbox.querySelector(".lightbox__close") : null;
+  var lastTrigger = null;
+
+  function openLightbox(src, alt, trigger) {
+    if (!lightbox || !lightboxImg || !src) { return; }
+    lightboxImg.src = src;
+    lightboxImg.alt = alt || "";
+    lightbox.hidden = false;
+    document.body.classList.add("has-lightbox");
+    lastTrigger = trigger || null;
+    if (lightboxClose) { lightboxClose.focus(); }
+  }
+
+  function closeLightbox() {
+    if (!lightbox || lightbox.hidden) { return; }
+    lightbox.hidden = true;
+    lightboxImg.removeAttribute("src");
+    lightboxImg.alt = "";
+    document.body.classList.remove("has-lightbox");
+    if (lastTrigger) { lastTrigger.focus(); }
+  }
+
+  if (lightbox && lightboxImg) {
+    var mediaButtons = document.querySelectorAll(".service__point-media");
+    var tapX = 0;
+    var tapY = 0;
+
+    function openFromButton(btn) {
+      var img = btn.querySelector("img");
+      if (img) { openLightbox(img.getAttribute("src"), img.alt, btn); }
+    }
+
+    Array.prototype.forEach.call(mediaButtons, function (btn) {
+      btn.addEventListener("click", function () {
+        openFromButton(btn);
+      });
+
+      btn.addEventListener("touchstart", function (event) {
+        var t = event.changedTouches[0];
+        tapX = t.clientX;
+        tapY = t.clientY;
+      }, { passive: true });
+
+      btn.addEventListener("touchend", function (event) {
+        var t = event.changedTouches[0];
+        if (Math.abs(t.clientX - tapX) > 10 || Math.abs(t.clientY - tapY) > 10) {
+          return;
+        }
+        event.preventDefault();
+        openFromButton(btn);
+      });
+    });
+
+    if (lightboxClose) {
+      lightboxClose.addEventListener("click", closeLightbox);
+    }
+
+    lightbox.addEventListener("click", function (event) {
+      if (event.target === lightbox) { closeLightbox(); }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") { closeLightbox(); }
+    });
+  }
 })();
