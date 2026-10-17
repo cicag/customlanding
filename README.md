@@ -1,6 +1,6 @@
 # Simple PHP/HTML/CSS/JS Landing Page
 
-Versi sederhana (tanpa React).
+Versi sederhana (tanpa React). Arahkan docroot ke /public
 
 ## Menyiapkan data
 1. Copy `src/data.json.example` menjadi `src/data.json`
